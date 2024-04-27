@@ -94,6 +94,16 @@ bash <(curl -Ls https://github.com/AC-Lover/backup/raw/main/backup.sh)
 
 ###
 
+<h1 align="right">نحوه‌ی خاموش کردن بکاپ</h1>
+
+###
+
+```
+sudo crontab -l | grep -vE '/root/ac-backup.+\.sh' | crontab -
+```
+
+###
+
 <h1 align="right">کمک به ما</h1>
 
 ###
