@@ -66,7 +66,7 @@ bash <(curl -Ls https://github.com/AC-Lover/backup/raw/main/backup.sh)
 
 ###
 
-<p align="left">The next step asks you to run a cron job to determine when the robot will back up and send<br>whose format is like this:<br>0 1<br>The first value, which is 0, is the minute, and the second value, which is 1, is the hour<br>The minimum number for minutes is 0 and the maximum is 60<br>The minimum number for the hour is 0 and the maximum is 24<br>Enter 0 for both to set backup once every minute<br>In the example above, it is backed up once every hour<br>Note that there is a space between both values</p>
+<p align="left">The next step asks you to run a cron job to determine when the robot will back up and send<br>whose format is like this: integer<br>The value is the minute<br>The minimum number for minutes is 1  and the maximum is 1440<br>e.g 60 (for every one hour) 1440 (for every one day) 10 (for every ten minutes)
 
 ###
 
