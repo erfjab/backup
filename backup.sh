@@ -1,12 +1,44 @@
 #!/bin/bash
 
+# برای نمایش متن های خبری ساده به رنگ آّبی
+function print() {
+    message="$1"
+    echo -e "\e[94m$message\e[0m"
+}
+
+# برای نمایش پیام موفقیت آمیز به رنگ پررنگ آبی
+function success() {
+    message="$1"
+    echo -e "\e[1;94m$message\e[0m"
+}
+
+# برای نمایش ارورها به رنگ قرمز
+function error() {
+    message="$1"
+    echo -e "\e[91m$message\e[0m"
+}
+
+# برای دریافت ورودی ها به رنگ نارنجی
+function input() {
+    message="$1"
+    name="$2"
+    read -p "$(echo -e '\e[33m'"$message"'\e[0m')" "$name"
+}
+
+# Welcome
+# اینتروی اسکریپت
+clear
+print '\n\n\tWelcome to Backup script'
+print '\t\tBy @Ac-Lover\n'
+print '----------------------------------'
+
+
 # Bot token
 # گرفتن توکن ربات از کاربر و ذخیره آن در متغیر tk
 while [[ -z "$tk" ]]; do
-    echo "Bot token: "
-    read -r tk
+    input "\nTelegram Bot Token (of @BotFather): " "tk"
     if [[ $tk == $'\0' ]]; then
-        echo "Invalid input. Token cannot be empty."
+        error "Invalid input. Token cannot be empty."
         unset tk
     fi
 done
@@ -14,67 +46,68 @@ done
 # Chat id
 # گرفتن Chat ID از کاربر و ذخیره آن در متغیر chatid
 while [[ -z "$chatid" ]]; do
-    echo "Chat id: "
-    read -r chatid
+    input "\nTelegram Chat id (of @userinfobot): " "chatid"
     if [[ $chatid == $'\0' ]]; then
-        echo "Invalid input. Chat id cannot be empty."
+        error "Invalid input. Chat id cannot be empty. try again..."
         unset chatid
     elif [[ ! $chatid =~ ^\-?[0-9]+$ ]]; then
-        echo "${chatid} is not a number."
+        error "${chatid} is not a number. try again..."
         unset chatid
     fi
 done
 
 # Caption
 # گرفتن عنوان برای فایل پشتیبان و ذخیره آن در متغیر caption
-echo "Caption (for example, your domain, to identify the database file more easily): "
-read -r caption
+input "\nCaption (for example, your domain, to identify the database file more easily): " "caption"
 
 # Cronjob
-# تعیین زمانی برای اجرای این اسکریپت به صورت دوره‌ای
+# تعیین زمانی برای اجرای این اسکریپت به صورت  دوره‌ای برحسب دقیقه
 while true; do
-    echo "Cronjob (minutes and hours) (e.g : 30 6 or 0 12) : "
-    read -r minute hour
-    if [[ $minute == 0 ]] && [[ $hour == 0 ]]; then
-        cron_time="* * * * *"
-        break
-    elif [[ $minute == 0 ]] && [[ $hour =~ ^[0-9]+$ ]] && [[ $hour -lt 24 ]]; then
-        cron_time="0 */${hour} * * *"
-        break
-    elif [[ $hour == 0 ]] && [[ $minute =~ ^[0-9]+$ ]] && [[ $minute -lt 60 ]]; then
-        cron_time="*/${minute} * * * *"
-        break
-    elif [[ $minute =~ ^[0-9]+$ ]] && [[ $hour =~ ^[0-9]+$ ]] && [[ $hour -lt 24 ]] && [[ $minute -lt 60 ]]; then
-        cron_time="*/${minute} */${hour} * * *"
-        break
+    input "\ncronjob time in minutes (not more than 1440) (e.g: 80 or 40 or 1440): " "interval"
+    if [[ $interval =~ ^[0-9]+$ ]]; then
+        if [[ $interval -eq 1 ]]; then
+            cron_time="* * * * *"
+            break
+        elif [[ $interval -eq 0 ]]; then
+            error "Invalid input. Please enter a number greater than zero."
+        elif [[ $interval -le 1440 ]]; then
+            cron_hour=$(( interval / 60 ))
+            cron_minute=$(( interval % 60 ))
+            if [[ $cron_hour -eq 0 ]]; then
+                cron_hour="*"
+            fi
+            cron_time="*/${cron_minute} */${cron_hour} * * *"
+            break
+        else
+            error "Invalid input. Please enter a number less than or equal to 1440."
+        fi
     else
-        echo "Invalid input, please enter a valid cronjob format (minutes and hours, e.g: 0 6 or 30 12)"
+        error "Invalid input. Please enter a valid number."
     fi
 done
+
 
 
 # x-ui or marzban or hiddify
 # گرفتن نوع نرم افزاری که می‌خواهیم پشتیبانی از آن بگیریم و ذخیره آن در متغیر xmh
 while [[ -z "$xmh" ]]; do
-    echo "x-ui or marzban or hiddify? [x/m/h] : "
-    read -r xmh
+    input "\nx-ui or marzban or hiddify? [x/m/h] : " "xmh"
     if [[ $xmh == $'\0' ]]; then
-        echo "Invalid input. Please choose x, m or h."
+        error "Invalid input. Please choose x, m or h."
         unset xmh
     elif [[ ! $xmh =~ ^[xmh]$ ]]; then
-        echo "${xmh} is not a valid option. Please choose x, m or h."
+        error "${xmh} is not a valid option. Please choose x, m or h."
         unset xmh
     fi
 done
 
 while [[ -z "$crontabs" ]]; do
-    echo "Would you like the previous crontabs to be cleared? [y/n] : "
-    read -r crontabs
+    input "\nWould you like the previous crontabs to be cleared? [y/n] : " "crontabs"
     if [[ $crontabs == $'\0' ]]; then
-        echo "Invalid input. Please choose y or n."
+        error "Invalid input. Please choose y or n."
         unset crontabs
     elif [[ ! $crontabs =~ ^[yn]$ ]]; then
-        echo "${crontabs} is not a valid option. Please choose y or n."
+        error "${crontabs} is not a valid option. Please choose y or n."
         unset crontabs
     fi
 done
@@ -90,9 +123,9 @@ fi
 if [[ "$xmh" == "m" ]]; then
 
 if dir=$(find /opt /root -type d -iname "marzban" -print -quit); then
-  echo "The folder exists at $dir"
+  success "The folder exists at $dir"
 else
-  echo "The folder does not exist."
+  error "The folder does not exist."
   exit 1
 fi
 
@@ -142,19 +175,19 @@ ACLover="marzban backup"
 elif [[ "$xmh" == "x" ]]; then
 
 if dbDir=$(find /etc /opt/freedom -type d -iname "x-ui*" -print -quit); then
-  echo "The folder exists at $dbDir"
+  success "The folder exists at $dbDir"
   if [[ $dbDir == *"/opt/freedom/x-ui"* ]]; then
      dbDir="${dbDir}/db/"
   fi
 else
-  echo "The folder does not exist."
+  error "The folder does not exist."
   exit 1
 fi
 
 if configDir=$(find /usr/local -type d -iname "x-ui*" -print -quit); then
-  echo "The folder exists at $configDir"
+  success "The folder exists at $configDir"
 else
-  echo "The folder does not exist."
+  error "The folder does not exist."
   exit 1
 fi
 
@@ -166,7 +199,7 @@ ACLover="x-ui backup"
 elif [[ "$xmh" == "h" ]]; then
 
 if ! find /opt/hiddify-manager/hiddify-panel/ -type d -iname "backup" -print -quit; then
-  echo "The folder does not exist."
+  error "The folder does not exist."
   exit 1
 fi
 
@@ -185,7 +218,7 @@ EOF
 )
 ACLover="hiddify backup"
 else
-echo "Please choose m or x or h only !"
+error "Please choose m or x or h only !"
 exit 1
 fi
 
@@ -229,4 +262,5 @@ bash "/root/ac-backup-${xmh}.sh"
 
 # Done
 # پایان اجرای اسکریپت
-echo -e "\nDone\n"
+success "\n\n\tDone with @Ac_Lover !"
+success "\t\t⭐ Don't Forget...\n\n"
