@@ -94,6 +94,16 @@ bash <(curl -Ls https://github.com/AC-Lover/backup/raw/main/backup.sh)
 
 ###
 
+<h1 align="left">How to stop backup?</h1>
+
+###
+
+```
+sudo crontab -l | grep -vE '/root/ac-backup.+\.sh' | crontab -
+```
+
+####
+
 <h1 align="left">Help us</h1>
 
 ###
